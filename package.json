@@ -44,6 +44,7 @@
   "dependencies": {
     "axios": "^0.26.1",
     "vant": "^3.4.8",
+    "vconsole": "^3.14.6",
     "vue": "^3.2.31",
     "vue-router": "^4.0.14",
     "vuex": "^4.0.2"
