@@ -5,7 +5,7 @@ const plugins = [
     "import",
     {
       libraryName: "vant",
-      libraryDirectory: "es",
+      libraryDirectory: "lib",
       style: true
     },
     "vant"
