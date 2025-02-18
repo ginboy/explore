@@ -33,6 +33,7 @@ import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { httpGet } from "@/api/http.js";
+import Toast from '../../components/my-toast/index.js'
 const router = useRouter();
 const store = useStore();
 const userObj = computed(() => store.state.user.userInfo);
@@ -41,7 +42,18 @@ store.dispatch("user/getUserInfo");
 let renderTest = ref("这里将显示请求回来的数据");
 //路由跳转
 function goToMine() {
-  router.push("/mine");
+  const toast1=new Toast({
+    message:'竹杖芒鞋轻胜马',
+    showLoad:true
+  })
+  const toast2=new Toast({
+    message:'也无风雨也无晴',
+    showLoad:true
+  })
+  setTimeout(()=>{
+    toast1.destory()
+  },2000)
+  console.log(toast1===toast2)//true
 }
 //发送请求
 async function testAxios() {
