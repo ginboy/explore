@@ -6,6 +6,8 @@ const copyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 // 压缩 CSS
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+// css提取
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 //压缩js
 const TerserWebpackPlugin = require("terser-webpack-plugin");
 
@@ -64,6 +66,12 @@ module.exports = merge(BaseWebpackConfig, {
         }
       ]
     }),
+    new MiniCssExtractPlugin(
+			{
+				filename: 'assets/styles/[name].[contenthash].css',
+				chunkFilename: 'assets/styles/[id].[contenthash].css',
+			}
+		),
     new HtmlWebpackPlugin({
       template: "./public/index.html", //用来做模板的html的文件路径
       filename: "index.html", //生成的html的名字
