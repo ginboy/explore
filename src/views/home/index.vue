@@ -1,5 +1,5 @@
 <template>
-  <div class="home-box" >
+  <div class="home-box" v-if="isOrientation">
       <div class="content">
           <div class="first item">
             <div class="header-box">
@@ -7,7 +7,7 @@
               <div class="user-name">{{ moveTime}}s</div>
             </div>
             <div class="sliderValue">{{ processNum }}%</div>
-            <div class="sliderValue">{{ touchValue }}</div>
+            <div class="sliderValue">{{ touchValue }}°</div>
         </div>
         <div class="second item">
         
@@ -21,10 +21,14 @@
       </div>
       <van-button type="primary" @click="init">Reset</van-button>
   </div>
+  <div class="mask" v-else>
+    请切换横屏使用
+  </div>
 </template>
 <script setup>
 import { ref,onMounted} from "vue";
 import DragArc from './circle.js';
+// import { Dialog } from 'vant';
  const myParagraph = ref(null);
 const canvasDom=ref(null)
 const pressTime=ref(0)//手指按下滑块的时刻
@@ -32,45 +36,61 @@ const moveTime=ref(0)//滑动持续时间
 const processNum = ref(0);//横向进度条当前值
 const touchValue = ref(0);//横向进度条当前值
 const isOrientation = ref(false);//横向进度条当前值
-const mediaQuery = window.matchMedia("(orientation: landscape)");
-mediaQuery.addEventListener("change", handleOrientationChange);
+if(window.matchMedia){
+  const mediaQuery = window.matchMedia("(orientation: landscape)");
+  mediaQuery.addEventListener("change", handleOrientationChange);
+  // 初始检查
+  handleOrientationChange(mediaQuery);
+}else if(window.orientation){
+  // 监听屏幕方向变化
+  window.addEventListener("orientationchange", checkOrientation);
+  checkOrientation()
+}else{
+  // 监听窗口大小变化
+    window.addEventListener("resize", checkOrientation);
 
-// 初始检查
-handleOrientationChange(mediaQuery);
+    // 初始检查
+    checkOrientationResize();
+}
+
+
+
 
 onMounted(() => {
-  if (myParagraph.value) {
-    canvasDom.value=new DragArc({
-      el: myParagraph.value,
-      startDeg: 1.5,
-      endDeg: 3.5,
-      outColor: '#eee',
-      sliderBorderColor:'rgb(121, 123, 125)',
-      counterclockwise: false,
-      textShow:false,
-      change: (v)=> {
-          console.log(`value:${v}`)
-          touchValue.value=v
-      },
-      mouseDown:()=>{
-        console.log("点击")
-        moveTime.value=0
-        pressTime.value=new Date().getTime();
-      },
-      mouseUp:()=>{
-        console.log("离开")
-          // 记录结束时间
-        const endTime = new Date().getTime();
-        // 计算持续时间（毫秒）
-        const durationInMs = endTime - pressTime.value;
-        // 将持续时间转换为秒并保留两位小数
-        moveTime.value = (durationInMs / 1000).toFixed(2);
-      }
-    })
-    init();
-  }
-});
 
+});
+function createCanvas(){
+  if (myParagraph.value) {
+        canvasDom.value=new DragArc({
+          el: myParagraph.value,
+          startDeg: 1.5,
+          endDeg: 3.5,
+          outColor: '#eee',
+          sliderBorderColor:'rgb(121, 123, 125)',
+          counterclockwise: false,
+          textShow:false,
+          change: (v)=> {
+              console.log(`value:${v}`)
+              touchValue.value=v
+          },
+          mouseDown:()=>{
+            console.log("点击")
+            moveTime.value=0
+            pressTime.value=new Date().getTime();
+          },
+          mouseUp:()=>{
+            console.log("离开")
+              // 记录结束时间
+            const endTime = new Date().getTime();
+            // 计算持续时间（毫秒）
+            const durationInMs = endTime - pressTime.value;
+            // 将持续时间转换为秒并保留两位小数
+            moveTime.value = (durationInMs / 1000).toFixed(2);
+          }
+        })
+        init();
+  }
+}
 function init(){
   pressTime.value=0
   moveTime.value=0
@@ -99,12 +119,42 @@ function dragEnd(){
 function handleOrientationChange(event) {
     if (event.matches) {
       isOrientation.value=true
+      setTimeout(()=>{
+        createCanvas()
+      },200)
+ 
     } else {
       isOrientation.value=false
     }
 }
-
-
+function checkOrientation() {
+    if (Math.abs(window.orientation) === 90) {
+        console.log("横屏");
+        // 横屏逻辑
+        isOrientation.value=true
+        setTimeout(()=>{
+          createCanvas()
+        },200)
+    } else {
+        console.log("竖屏");
+        // 竖屏逻辑
+        isOrientation.value=false
+    }
+}
+function checkOrientationResize() {
+    if (screen.width > screen.height) {
+        console.log("横屏");
+         // 横屏逻辑
+        isOrientation.value=true
+        setTimeout(()=>{
+          createCanvas()
+        },200)
+    } else {
+        console.log("竖屏");
+        // 竖屏逻辑
+        isOrientation.value=false
+    }
+}
 </script>
 <style lang="scss" scoped>
 
@@ -148,13 +198,13 @@ function handleOrientationChange(event) {
         border: 2px solid #4ea9f3;
           .content-title{
             font-size: 20px;
-            height: 60px;
-            line-height: 60px;
+            height: 50px;
+            line-height: 50px;
           }
           .user-name{
             font-size: 18px;
-            height: 60px;
-            line-height: 60px;
+            height: 50px;
+            line-height: 50px;
           }
         }
         .sliderValue{
@@ -174,7 +224,7 @@ function handleOrientationChange(event) {
           width: 60%;
           top: 50%;
           left: 50%;
-          transform: translate(-50%,-50%);
+          transform: translate(-40%,-50%);
           height: 20px;
           .van-slider__button{
             background: rgb(121, 123, 125);
@@ -198,12 +248,20 @@ function handleOrientationChange(event) {
         position: absolute;
         top: 10%;
         left: 50%;
-        transform: translateX(-50%);
+        transform: translateX(-70%);
       }
     }
   }
   :deep() .van-button{
     height: 40px;
   }
+}
+.mask{
+  background: #ccc;
+  height: 100vh;
+  width: 100%;
+  text-align: center;
+  line-height: 100vh;
+  font-size: 50px;
 }
 </style>

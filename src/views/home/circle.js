@@ -196,7 +196,7 @@ class DragAcr {
         this.animate = requestAnimationFrame(this.draw.bind(this,val));
         if(Math.abs (val - this.value)>0.2){
             this.value = val;
-            this.change(Math.round(this.value*360/100)+'°')
+            this.change(Math.round(this.value*360/100))
         }
     }
 

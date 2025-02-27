@@ -1,4 +1,4 @@
-import { Button,Popup,Cell,Field,Cascader,Picker,Slider,Circle}from "vant";
+import { Button,Popup,Cell,Field,Cascader,Picker,Slider,Circle,Dialog}from "vant";
 export default (app) => {
   app.use(Button);
   app.use(Popup);
@@ -7,5 +7,6 @@ export default (app) => {
   app.use(Cascader);
   app.use(Picker);
   app.use(Slider);
-  app.use(Circle)
+  app.use(Circle);
+  app.use(Dialog)
 };
